@@ -1,40 +1,56 @@
 //Задание 1
-//Используя Symbol.iterator, создайте объект "Музыкальная коллекция", который можно итерировать. Каждая итерация должна возвращать следующий альбом из коллекции.
+//Представьте, что у вас есть класс для управления библиотекой. В этом классе будет приватное свойство для хранения списка книг, а также методы для добавления книги, удаления книги и получения информации о наличии книги.
+//Класс должен содержать приватное свойство #books, которое инициализируется пустым массивом и представляет собой список книг в библиотеке.
+//Реализуйте геттер allBooks, который возвращает текущий список книг.
+//Реализуйте метод addBook(title), который позволяет добавлять книгу в список. Если книга с таким названием уже существует в списке, выбросьте ошибку с соответствующим сообщением.
+//Реализуйте метод removeBook(title), который позволит удалять книгу из списка по названию. Если книги с таким названием нет в списке, выбросьте ошибку с соответствующим сообщением.
+//Реализуйте метод hasBook(title), который будет проверять наличие книги в библиотеке и возвращать true или false в зависимости от того, есть ли такая книга в списке или нет.
+//Реализуйте конструктор, который принимает начальный список книг (массив) в качестве аргумента. Убедитесь, что предоставленный массив не содержит дубликатов; в противном случае выбрасывайте ошибку.
 
-//Создайте объект musicCollection, который содержит массив альбомов и имеет свойство-символ Symbol.iterator. /
+class Library {
+  #books;
 
-let musicCollection = {
-    albums: [
-      {
-        title: "Альбом 1",
-        artist: "Исполнитель 1",
-        year: "2000"
-      },
-      {
-        title: "Альбом 2",
-        artist: "Исполнитель 2",
-        year: "2005"
-      },
-      {
-        title: "Альбом 3",
-        artist: "Исполнитель 3",
-        year: "2010"
-      }
-    ],
-    [Symbol.iterator]: function() {
-      let index = 0;
-      return {
-        next: () => {
-          if (index < this.albums.length) {
-            return { value: this.albums[index++], done: false };
-          } else {
-            return { done: true };
-          }
-        }
-      };
+  constructor(initialBooks) {
+    const uniqueBooks = new Set(initialBooks);
+    if (uniqueBooks.size !== initialBooks.length) {
+      throw new Error("Начальный список книг содержит дубликаты");
     }
-  };
-  for (let album of musicCollection) {
-    console.log({album.title} - {album.artist}({album.year}));
+    this.#books = initialBooks;
   }
-  
+
+  get allBooks() {
+    return this.#books;
+  }
+
+  addBook(title) {
+    if (this.#books.includes(title)) {
+      throw new Error("Книга с таким названием уже существует в списке");
+    }
+    this.#books.push(title);
+  }
+
+  removeBook(title) {
+    const index = this.#books.indexOf(title);
+    if (index === -1) {
+      throw new Error("Книги с таким названием нет в списке");
+    }
+    this.#books.splice(index, 1);
+  }
+
+  hasBook(title) {
+    return this.#books.includes(title);
+  }
+}
+
+// Пример использования:
+const library = new Library(["Книга 1", "Книга 2", "Книга 3"]);
+console.log(library.allBooks); // ['Книга 1', 'Книга 2', 'Книга 3']
+
+library.addBook("Новая книга");
+console.log(library.allBooks); // ['Книга 1', 'Книга 2', 'Книга 3', 'Новая книга']
+
+library.removeBook("Книга 2");
+console.log(library.allBooks); // ['Книга 1', 'Книга 3', 'Новая книга']
+
+console.log(library.hasBook("Книга 1")); // true
+console.log(library.hasBook("Книга 4")); // false
